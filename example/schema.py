@@ -2,6 +2,7 @@ from graphene_sqlalchemy import SQLAlchemyConnectionField
 import graphene
 import schema_planet
 import schema_people
+import schema_order
 
 from database import model_planet as ModelPlanet
 
@@ -18,9 +19,6 @@ def json2obj(data):
     return json.loads(data, object_hook=_json_object_hook)
 
 
-class Order(ObjectType):
-    orderId = String()
-    dog = String()
 
 class Query(graphene.ObjectType):
     """Nodes which can be queried by this API."""
@@ -44,13 +42,13 @@ class Query(graphene.ObjectType):
         return query_result
 
 
-    orders = List(Order)
+    orders = List(schema_order.Order)
     def resolve_orders(self, context):
         url = 'http://localhost:5001/orders'
         response = requests.get(url)   
         return json2obj(json.dumps(response.json()))
     
-    order = Field(Order, id=Int(required=True))
+    order = Field(schema_order.Order, id=Int(required=True))
     def resolve_order(self, context, id):
         url = 'http://localhost:5001/order/'+str(id)
         response = requests.get(url)   
